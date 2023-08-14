@@ -3,53 +3,35 @@ import {
   Text,
   Button,
   StyleSheet,
-  Platform,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {useAuth} from '../../AuthContext';
 import useLocationAddress from '../CustomHook/useLocationAddress'; // Özel kancayı içe aktarın
 import axios from 'axios'; // API istekleri yapmak için Axios kütüphanesini içe aktarın
 import {GIRIS_API_URL} from '@env';
 import {useNavigation} from '@react-navigation/native';
-import useApiRequest from '../CustomHook/useApiRequest'; // Özel kancayı içe aktarın
 
-const Home = () => {
+const ShareLocation = () => {
   const navigation = useNavigation();
-  const [giris, setGiris] = useState();
-  const {user, updateUser} = useAuth();
+  const {user} = useAuth();
   const [location, address, refreshLocation, locationError] =
-    useLocationAddress();
-  const {loading, response, sendPostRequest} = useApiRequest();
-  useEffect(() => {
-    setGiris(user.giris);
-  }, []);
-  /*
-    function handleLogOut() {
-      updateUser(null);
-    }
-    */
-  function getFormattedDate() {
-    const now = new Date();
-    const day = now.getDate();
-    const month = now.getMonth() + 1; // Ay indeksi 0'dan başlar, Ocak = 0, Şubat = 1, ...
-    const year = now.getFullYear();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-    const formattedDate = `${day}/${month}/${year}`;
-    return {formattedDate, formattedTime};
-  }
-  function toggleGiris() {
-    const {formattedDate, formattedTime} = getFormattedDate();
+    useLocationAddress(); // Özel kancayı kullanın
+  //const [url, seturl] = useState();
+  const [loading, setLoading] = useState(false);
+  const [response, setresponse] = useState('Konum Gönder');
+ 
+  function toggleKonum() {
+    setLoading(true);
+    setresponse('Konum Gönder');
+    //console.log(formattedDate,formattedTime);
     // Gönderilecek günlük veri nesnesi
     const logData = {
       sicilno: parseInt(user.sicilno),
-      uniqueid: user.deviceid.toString(),
-      giris: giris ? 'C' : 'G',
-      tarih: formattedDate,
-      saat: formattedTime,
+      uniqueid: '',
+      giris: '',
+      tarih: '',
+      saat: '',
       enlem: location ? location.latitude.toString() : null,
       boylam: location ? location.longitude.toString() : null,
       adres: address || 'Adres bilgisi alınamadı',
@@ -59,7 +41,21 @@ const Home = () => {
     const apiURL = `${GIRIS_API_URL}?XID=${logData.uniqueid}&tarih=${logData.tarih}&gc=${logData.giris}&saat=${logData.saat}&enlem=${logData.enlem}&boylam=${logData.boylam}&adres=${logData.adres}&BORDNO=${logData.sicilno}`;
     //const apiURL ='http://84.51.47.245:45519/ords/olymposm/olympos_mobil/gc/?XID=321333&tarih=11-10-2023&gc=C&saat=12:13:14&enlem=1.1.1.1.1&boylam=2.2.2.2.2&adres=SERKAN&BORDNO=1235';
     // API isteği gönderme post
-    sendPostRequest(apiURL, logData, updateUser, setGiris);
+    
+    axios
+      .post(apiURL)
+      .then(response => {
+        //console.log(response.data.result_message);
+        setresponse(response.data.result_message);
+      })
+      .catch(error => {
+        setresponse(error.message);
+        //console.error('POST isteği gönderilirken bir hata oluştu:', error);
+      })
+      .finally(() => {
+        // İstek tamamlandıktan sonra her durumda çalışır
+        setLoading(false);
+      });
   }
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -73,10 +69,9 @@ const Home = () => {
         <Text>Home</Text>
         <Text>{user.deviceid}</Text>
         <Text>{user.sicilno}</Text>
-        {giris === false ? <Text>false</Text> : <Text>true</Text>}
-        {/*
-          <Button title="LogOut" onPress={handleLogOut} />
-          */}
+        {/*   
+            <Button title="LogOut" onPress={handleLogOut} />
+               */}
         <Text
           style={{
             fontSize: 22,
@@ -101,15 +96,15 @@ const Home = () => {
         {address ? (
           <>
             {/*<Text>Enlem: {location.latitude}</Text>
-              <Text>Boylam: {location.longitude}</Text>
-              <Text>Url: {url}</Text>*/}
+                <Text>Boylam: {location.longitude}</Text>
+                <Text>Url: {url}</Text>*/}
             <Text style={{fontSize: 15, marginBottom: 8, fontStyle: 'italic'}}>
               {address}
             </Text>
             <View style={{marginVertical: 5}}>
               <Button
-                title={loading ? 'İşleniyor...' : giris ? 'Çıkış' : 'Giriş'}
-                onPress={toggleGiris}
+                title={loading ? 'İşleniyor...' : 'Konum Gönder'}
+                onPress={toggleKonum}
               />
             </View>
           </>
@@ -121,8 +116,8 @@ const Home = () => {
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Button title="Konum Yenile" onPress={refreshLocation} />
           <Button
-            title="Konum Paylaş Sayfasına Git"
-            onPress={() => navigation.navigate('ShareLocation')}
+            title="Giriş Sayfasına Git"
+            onPress={() => navigation.navigate('Home')}
           />
         </View>
       </View>
@@ -139,4 +134,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default ShareLocation;

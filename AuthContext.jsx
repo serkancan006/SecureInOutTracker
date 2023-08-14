@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import {Text} from 'react-native';
+import {getUniqueId} from 'react-native-device-info';
 
 // Kimlik doğrulama bağlamı oluşturuluyor
 const AuthContext = createContext();
@@ -25,10 +26,22 @@ const AuthProvider = ({children}) => {
     setIsLoading(false);
   };
 
+  const updateUser = async () => {
+    const updatedUser = {...user, giris: !user.giris};
+    await setItem(JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   // Depolamaya veri yazma işlevi
-  const writeItemToStorage = async newValue => {
-    await setItem(JSON.stringify(newValue));
-    setUser(newValue);
+  const registerUser = async sicilno => {
+    const uniqueId = await getUniqueId();
+    const userValue = {
+      deviceid: uniqueId,
+      sicilno: sicilno,
+      giris: false,
+    };
+    await setItem(JSON.stringify(userValue));
+    setUser(userValue);
   };
 
   // Bileşen yüklendiğinde depolamadan veri okuma yapılıyor
@@ -43,7 +56,7 @@ const AuthProvider = ({children}) => {
 
   // Kimlik doğrulama bağlamını sağlayıcı ile saran bileşen
   return (
-    <AuthContext.Provider value={[user, writeItemToStorage]}>
+    <AuthContext.Provider value={{user, registerUser, updateUser}}>
       {children}
     </AuthContext.Provider>
   );

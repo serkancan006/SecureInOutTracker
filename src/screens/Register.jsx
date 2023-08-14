@@ -1,20 +1,13 @@
-import {
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  Alert,
-  Button,
-} from 'react-native';
+import {ScrollView, Alert, StyleSheet} from 'react-native';
 import React, {useState} from 'react';
 import {useAuth} from '../../AuthContext';
-import {getUniqueId} from 'react-native-device-info';
+import InputField from '../components/InputField'; // InputField komponentini içe aktarın
+import RegisterButton from '../components/RegisterButton'; // RegisterButton komponentini içe aktarın
 
 const Register = () => {
   const [inputValue, setInputValue] = useState('');
   const [secondInputValue, setSecondInputValue] = useState('');
-  const [user, writeItemToStorage] = useAuth();
+  const {registerUser} = useAuth();
 
   const handleButtonPress = async () => {
     // Eğer giriş değerleri boşsa uyarı göster ve fonksiyondan çık
@@ -24,16 +17,11 @@ const Register = () => {
     }
     try {
       // Cihaz kimliğini (uniqueId) al
-      const uniqueId = await getUniqueId();
       // Eğer giriş değerleri eşleşiyorsa
       if (inputValue === secondInputValue) {
         // AsyncStorage'de veriyi kaydet
-        const userValue = {
-          deviceid: uniqueId,
-          sicilno: inputValue,
-          giris: false,
-        };
-        writeItemToStorage(userValue);
+
+        registerUser(inputValue);
         // Diyelim ki setItem başarılı oldu, bu durumda bir yönlendirme yapabilir veya başarı mesajı gösterebilirsiniz.
         // Alert.alert('Başarılı', 'Giriş Yapılıyor');
       } else {
@@ -49,21 +37,17 @@ const Register = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TextInput
-        style={{...styles.input, marginTop: 10}}
+      <InputField
         placeholder="Sicil Numaranızı Giriniz"
         value={inputValue}
         onChangeText={text => setInputValue(text.slice(0, 5))}
-        maxLength={5}
       />
-      <TextInput
-        style={styles.input}
+      <InputField
         placeholder="Sicil Numaranızı Tekrar Giriniz"
         value={secondInputValue}
         onChangeText={text => setSecondInputValue(text.slice(0, 5))}
-        maxLength={5}
       />
-      <Button title="kayıt ol" onPress={handleButtonPress} />
+      <RegisterButton onPress={handleButtonPress} />
     </ScrollView>
   );
 };

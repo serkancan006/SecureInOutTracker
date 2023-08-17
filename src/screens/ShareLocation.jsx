@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import {View, Text, Button, StyleSheet, ScrollView} from 'react-native';
 import React, {useState} from 'react';
 import {useAuth} from '../../AuthContext';
 import useLocationAddress from '../CustomHook/useLocationAddress'; // Özel kancayı içe aktarın
@@ -20,18 +14,31 @@ const ShareLocation = () => {
   //const [url, seturl] = useState();
   const [loading, setLoading] = useState(false);
   const [response, setresponse] = useState('Konum Gönder');
- 
+  function getFormattedDate() {
+    const now = new Date();
+    const day = now.getDate();
+    const month = now.getMonth() + 1; // Ay indeksi 0'dan başlar, Ocak = 0, Şubat = 1, ...
+    const year = now.getFullYear();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    const formattedDate = `${day}/${month}/${year}`;
+    return {formattedDate, formattedTime};
+  }
   function toggleKonum() {
     setLoading(true);
     setresponse('Konum Gönder');
     //console.log(formattedDate,formattedTime);
     // Gönderilecek günlük veri nesnesi
+    const {formattedDate, formattedTime} = getFormattedDate();
+    // Gönderilecek günlük veri nesnesi
     const logData = {
       sicilno: parseInt(user.sicilno),
-      uniqueid: '',
-      giris: '',
-      tarih: '',
-      saat: '',
+      uniqueid: user.deviceid.toString(),
+      giris: 'K',
+      tarih: formattedDate,
+      saat: formattedTime,
       enlem: location ? location.latitude.toString() : null,
       boylam: location ? location.longitude.toString() : null,
       adres: address || 'Adres bilgisi alınamadı',
@@ -47,6 +54,7 @@ const ShareLocation = () => {
       .then(response => {
         //console.log(response.data.result_message);
         setresponse(response.data.result_message);
+        console.log(response.data);
       })
       .catch(error => {
         setresponse(error.message);

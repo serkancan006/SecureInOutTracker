@@ -2,14 +2,14 @@
 // App.jsx
 import {NavigationContainer} from '@react-navigation/native';
 import AuthProvider from './AuthContext';
-import Navigator from './Navigator';
+import RootNavigator from './RootNavigator';
 
 // Ana uygulama yönlendirme işlevi
 const App = () => {
   return (
     <NavigationContainer>
       <AuthProvider>
-        <Navigator />
+        <RootNavigator />
       </AuthProvider>
     </NavigationContainer>
   );

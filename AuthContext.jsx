@@ -1,7 +1,8 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
-import {Text} from 'react-native';
+import {Text, View} from 'react-native';
 import {getUniqueId} from 'react-native-device-info';
+import colors from './styles/color';
 
 // Kimlik doğrulama bağlamı oluşturuluyor
 const AuthContext = createContext();
@@ -16,17 +17,21 @@ const AuthProvider = ({children}) => {
   // Kullanıcı durumu ve asenkron depolama işlevleri alınıyor
   const [user, setUser] = useState();
   const {getItem, setItem} = useAsyncStorage('userData');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Depolamadan veri okuma işlevi
   const readItemFromStorage = async () => {
-    setIsLoading(true);
     const item = await getItem();
     setUser(JSON.parse(item));
     setIsLoading(false);
   };
 
-  const updateUser = async () => {
+  const LogOutUser = async () => {
+    await setItem(JSON.stringify(null));
+    setUser(null);
+  };
+
+  const changeGirisCikis = async () => {
     const updatedUser = {...user, giris: !user.giris};
     await setItem(JSON.stringify(updatedUser));
     setUser(updatedUser);
@@ -51,12 +56,21 @@ const AuthProvider = ({children}) => {
 
   // Yükleme işlemi devam ederken bekleme durumunda "Yükleniyor..." metni gösteriliyor
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.pagebackground,
+        }}>
+        <Text>Sayfalar Yükleniyor...</Text>
+      </View>
+    );
   }
 
   // Kimlik doğrulama bağlamını sağlayıcı ile saran bileşen
   return (
-    <AuthContext.Provider value={{user, registerUser, updateUser}}>
+    <AuthContext.Provider
+      value={{user, registerUser, changeGirisCikis, LogOutUser}}>
       {children}
     </AuthContext.Provider>
   );

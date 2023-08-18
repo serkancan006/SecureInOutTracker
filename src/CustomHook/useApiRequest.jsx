@@ -6,13 +6,13 @@ const useApiRequest = () => {
   const [response, setResponse] = useState('');
   const [error, setError] = useState(null);
 
-  const sendPostRequest = async (url, requestData, updateUser, setGiris) => {
+  const sendPostRequest = async (url, requestData, changeGirisCikis, setGiris) => {
     setLoading(true);
 
     try {
       const response = await axios.post(url, requestData);
       setResponse(response.data.result_message);
-      updateUser();
+      changeGirisCikis();
       setGiris(prevGiris => !prevGiris);
     } catch (error) {
       setError(error.message);

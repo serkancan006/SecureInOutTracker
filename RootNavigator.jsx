@@ -5,8 +5,10 @@ import TabNavigator from './TabNavigator';
 // useContext
 import {useAuth} from './AuthContext';
 //componenet
-import DavetLogo from './src/componenets/DavetLogo';
-import OlimposLogo from './src/componenets/OlimposLogo';
+import DavetLogo from './src/components/DavetLogo';
+import OlimposLogo from './src/components/OlimposLogo';
+//color
+import colors from './styles/color';
 // İlgili ekran yığını oluşturuluyor
 const Stack = createNativeStackNavigator();
 
@@ -22,8 +24,12 @@ const RootNavigator = () => {
           headerTitleAlign: 'center',
           headerLeft: () => <DavetLogo />,
           headerRight: () => <OlimposLogo />,
-          headerStyle: {backgroundColor: '#ECECEC'},
-          headerTitleStyle: {fontSize: 22, fontWeight: '600', color: '#1A5A9B'}, //#1A5A9B -> Davet , #2A95FF ->Olimpos
+          headerStyle: {backgroundColor: colors.headerbackground},
+          headerTitleStyle: {
+            fontSize: 22,
+            fontWeight: '600',
+            color: colors.primary,
+          },
         }}>
         <Stack.Screen
           name="Register"
@@ -40,13 +46,17 @@ const RootNavigator = () => {
         headerTitleAlign: 'center',
         headerLeft: () => <DavetLogo />,
         headerRight: () => <OlimposLogo />,
-        headerStyle: {backgroundColor: '#ECECEC'},
-        headerTitleStyle: {fontSize: 22, fontWeight: '600', color: '#1A5A9B'}, //#1A5A9B -> Davet , #2A95FF ->Olimpos
+        headerStyle: {backgroundColor: colors.headerbackground},
+        headerTitleStyle: {
+          fontSize: 22,
+          fontWeight: '600',
+          color: colors.primary,
+        },
       }}>
       <Stack.Screen
         name="Anasayfalar"
         component={TabNavigator}
-        options={{headerTitle: 'Olimpos QR'}}
+        options={{headerTitle: 'Olimpos Seyyar'}}
       />
     </Stack.Navigator>
   );

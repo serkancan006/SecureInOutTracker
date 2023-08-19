@@ -1,20 +1,28 @@
-import {View, Text, Button, ScrollView} from 'react-native';
-import React, {useState} from 'react';
+import {View, Text, Button, Platform, ScrollView} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {useAuth} from '../../AuthContext';
+import {BASE_API_URL} from '@env';
+//custom state
 import useLocationAddress from '../CustomHook/useLocationAddress'; // Özel kancayı içe aktarın
-import axios from 'axios'; // API istekleri yapmak için Axios kütüphanesini içe aktarın
-import {GIRIS_API_URL} from '@env';
+//stiller
 import Pagestyles from '../../styles/Pagestyles';
+import mainstyles from '../../styles/Mainstyles';
 import colors from '../../styles/color';
-import mainstyles from '../../styles/mainstyles';
+//axios
+import axios from 'axios';
 
 const ShareLocation = () => {
-  const {user} = useAuth();
+  const [giris, setGiris] = useState();
+  const {user, changeGirisCikis, LogOutUser} = useAuth();
   const [location, address, refreshLocation, locationError] =
-    useLocationAddress(); // Özel kancayı kullanın
-  //const [url, seturl] = useState();
-  const [loading, setLoading] = useState(false);
-  const [response, setresponse] = useState('Konum Gönder');
+    useLocationAddress();
+  const [loading, setloading] = useState(false);
+  const [response, setResponse] = useState('Konum Bilgisi Paylaş');
+
+  useEffect(() => {
+    setGiris(user.giris);
+  }, []);
+
   function getFormattedDate() {
     const now = new Date();
     const day = now.getDate();
@@ -27,11 +35,9 @@ const ShareLocation = () => {
     const formattedDate = `${day}/${month}/${year}`;
     return {formattedDate, formattedTime};
   }
-  function toggleKonum() {
-    setLoading(true);
-    setresponse('Konum Gönder');
-    //console.log(formattedDate,formattedTime);
-    // Gönderilecek günlük veri nesnesi
+
+  const toggleshareLocation = async () => {
+    setResponse(null);
     const {formattedDate, formattedTime} = getFormattedDate();
     // Gönderilecek günlük veri nesnesi
     const logData = {
@@ -46,34 +52,34 @@ const ShareLocation = () => {
     };
 
     // API isteği için gereken URL ve sorgu dizesi oluştur
-    const apiURL = `${GIRIS_API_URL}?XID=${logData.uniqueid}&tarih=${logData.tarih}&gc=${logData.giris}&saat=${logData.saat}&enlem=${logData.enlem}&boylam=${logData.boylam}&adres=${logData.adres}&BORDNO=${logData.sicilno}`;
+    const apiURL = `${BASE_API_URL}?XID=${logData.uniqueid}&tarih=${logData.tarih}&gc=${logData.giris}&saat=${logData.saat}&enlem=${logData.enlem}&boylam=${logData.boylam}&adres=${logData.adres}&BORDNO=${logData.sicilno}`;
     //const apiURL ='http://84.51.47.245:45519/ords/olymposm/olympos_mobil/gc/?XID=321333&tarih=11-10-2023&gc=C&saat=12:13:14&enlem=1.1.1.1.1&boylam=2.2.2.2.2&adres=SERKAN&BORDNO=1235';
     // API isteği gönderme post
-
-    axios
-      .post(apiURL)
+    await axios
+      .post(apiURL, logData)
       .then(response => {
-        //console.log(response.data.result_message);
-        setresponse(response.data.result_message);
         console.log(response.data);
+        if (response.data.wtf === 'FALSE') {
+          setResponse(response.data.result_message);
+          setloading(false);
+          LogOutUser();
+        } else {
+          setResponse(response.data.result_message);
+          setloading(false);
+        }
       })
-      .catch(error => {
-        setresponse(error.message);
-        //console.error('POST isteği gönderilirken bir hata oluştu:', error);
-      })
-      .finally(() => {
-        // İstek tamamlandıktan sonra her durumda çalışır
-        setLoading(false);
+      .catch(err => {
+        console.log(err);
+        setloading(false);
       });
-  }
+  };
   return (
     <ScrollView contentContainerStyle={Pagestyles.container}>
       <View
         style={{
-          width: '100%',
-          flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
+          height: 200,
         }}>
         <Text
           style={{
@@ -81,11 +87,13 @@ const ShareLocation = () => {
             fontSize: 22,
             textAlign: 'center',
             fontWeight: 'bold',
+            color: colors.text,
           }}>
           {response}
         </Text>
       </View>
-      <View style={{width: '100%', flex: 1}}>
+
+      <View>
         <Text
           style={{
             ...mainstyles.text,
@@ -110,8 +118,8 @@ const ShareLocation = () => {
             </Text>
             <View style={{marginVertical: 5}}>
               <Button
-                title={loading ? 'İşleniyor...' : 'Konum Gönder'}
-                onPress={toggleKonum}
+                title={loading ? 'İşleniyor...' : 'Konum Paylaş'}
+                onPress={toggleshareLocation}
                 color={colors.primary}
               />
             </View>

@@ -1,22 +1,23 @@
 import {View, Text, Button, Platform, ScrollView} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {useAuth} from '../../AuthContext';
+import {BASE_API_URL} from '@env';
+import axios from 'axios';
+//custom state
 import useLocationAddress from '../CustomHook/useLocationAddress'; // Özel kancayı içe aktarın
-import axios from 'axios'; // API istekleri yapmak için Axios kütüphanesini içe aktarın
-import {GIRIS_API_URL} from '@env';
-import {useNavigation} from '@react-navigation/native';
-import useApiRequest from '../CustomHook/useApiRequest'; // Özel kancayı içe aktarın
+//stiller
 import Pagestyles from '../../styles/Pagestyles';
-import mainstyles from '../../styles/mainstyles';
+import mainstyles from '../../styles/Mainstyles';
 import colors from '../../styles/color';
 
 const Home = () => {
-  const navigation = useNavigation();
   const [giris, setGiris] = useState();
-  const {user, changeGirisCikis} = useAuth();
+  const {user, changeGirisCikis, LogOutUser} = useAuth();
   const [location, address, refreshLocation, locationError] =
     useLocationAddress();
-  const {loading, response, sendPostRequest} = useApiRequest();
+  const [loading, setloading] = useState(false);
+  const [response, setResponse] = useState('Giriş veya Çıkış Yapınız');
+
   useEffect(() => {
     setGiris(user.giris);
   }, []);
@@ -33,7 +34,9 @@ const Home = () => {
     const formattedDate = `${day}/${month}/${year}`;
     return {formattedDate, formattedTime};
   }
-  function toggleGiris() {
+
+  const toggleGiris = async () => {
+    setloading(true);
     const {formattedDate, formattedTime} = getFormattedDate();
     // Gönderilecek günlük veri nesnesi
     const logData = {
@@ -46,23 +49,37 @@ const Home = () => {
       boylam: location ? location.longitude.toString() : null,
       adres: address || 'Adres bilgisi alınamadı',
     };
-
-    // API isteği için gereken URL ve sorgu dizesi oluştur
-    const apiURL = `${GIRIS_API_URL}?XID=${logData.uniqueid}&tarih=${logData.tarih}&gc=${logData.giris}&saat=${logData.saat}&enlem=${logData.enlem}&boylam=${logData.boylam}&adres=${logData.adres}&BORDNO=${logData.sicilno}`;
     //const apiURL ='http://84.51.47.245:45519/ords/olymposm/olympos_mobil/gc/?XID=321333&tarih=11-10-2023&gc=C&saat=12:13:14&enlem=1.1.1.1.1&boylam=2.2.2.2.2&adres=SERKAN&BORDNO=1235';
+    const apiURL = `${BASE_API_URL}?XID=${logData.uniqueid}&tarih=${logData.tarih}&gc=${logData.giris}&saat=${logData.saat}&enlem=${logData.enlem}&boylam=${logData.boylam}&adres=${logData.adres}&BORDNO=${logData.sicilno}`;
     // API isteği gönderme post
-    sendPostRequest(apiURL, logData, changeGirisCikis, setGiris);
-  }
+    await axios
+      .post(apiURL, logData)
+      .then(response => {
+        console.log(response.data);
+        if (response.data.wtf === 'FALSE') {
+          setResponse(response.data.result_message);
+          setloading(false);
+          LogOutUser();
+        } else {
+          setResponse(response.data.result_message);
+          setloading(false);
+          changeGirisCikis();
+          setGiris(!giris);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        setloading(false);
+      });
+  };
   return (
     <ScrollView contentContainerStyle={Pagestyles.container}>
       <View
         style={{
-          width: '100%',
-          flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
+          height: 200,
         }}>
-        <Text style={mainstyles.text}>Home</Text>
         <Text
           style={{
             ...mainstyles.text,
@@ -74,7 +91,8 @@ const Home = () => {
           {response}
         </Text>
       </View>
-      <View style={{width: '100%', flex: 1}}>
+
+      <View>
         <Text
           style={{
             ...mainstyles.text,

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TextInput, Text, StyleSheet} from 'react-native';
 import colors from '../../styles/color';
-import mainstyles from '../../styles/mainstyles';
+import mainstyles from '../../styles/Mainstyles';
 
 const InputComponent = ({field, formikProps, style}) => (
   <React.Fragment>

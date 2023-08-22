@@ -1,8 +1,8 @@
 /* eslint-disable react/react-in-jsx-scope */
 // App.jsx
 import {NavigationContainer} from '@react-navigation/native';
-import AuthProvider from './AuthContext';
-import RootNavigator from './RootNavigator';
+import AuthProvider from './ContextApi/AuthContext';
+import RootNavigator from './Navigation/RootNavigator';
 
 // Ana uygulama yönlendirme işlevi
 const App = () => {

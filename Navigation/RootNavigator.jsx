@@ -1,14 +1,14 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // Sayfalar
-import Register from './src/screens/Register';
+import Register from '../src/screens/Register';
 import TabNavigator from './TabNavigator';
 // useContext
-import {useAuth} from './AuthContext';
+import {useAuth} from '../ContextApi/AuthContext';
 //componenet
-import DavetLogo from './src/components/DavetLogo';
-import OlimposLogo from './src/components/OlimposLogo';
+import DavetLogo from '../src/components/DavetLogo';
+import OlimposLogo from '../src/components/OlimposLogo';
 //color
-import colors from './styles/color';
+import colors from '../styles/color';
 // İlgili ekran yığını oluşturuluyor
 const Stack = createNativeStackNavigator();
 

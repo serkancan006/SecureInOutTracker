@@ -2,7 +2,7 @@ import React, {createContext, useContext, useState, useEffect} from 'react';
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import {Text, View} from 'react-native';
 import {getUniqueId} from 'react-native-device-info';
-import colors from './styles/color';
+import colors from '../styles/color';
 
 // Kimlik doğrulama bağlamı oluşturuluyor
 const AuthContext = createContext();

@@ -1,12 +1,12 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 // Sayfalar
-import Home from './src/screens/Home';
-import ShareLocation from './src/screens/ShareLocation';
-import UserInfo from './src/screens/UserInfo';
+import Home from '../src/screens/Home';
+import ShareLocation from '../src/screens/ShareLocation';
+import UserInfo from '../src/screens/UserInfo';
 //iconlar
 import Icon from 'react-native-vector-icons/FontAwesome';
 //colorlar
-import colors from './styles/color';
+import colors from '../styles/color';
 
 const Tab = createBottomTabNavigator();
 

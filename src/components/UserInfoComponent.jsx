@@ -1,6 +1,6 @@
 import {View, Text, Button} from 'react-native';
 import React from 'react';
-import {useAuth} from '../../AuthContext';
+import {useAuth} from '../../ContextApi/AuthContext';
 import mainstyles from '../../styles/Mainstyles';
 import colors from '../../styles/color';
 

@@ -1,7 +1,7 @@
 import {ScrollView} from 'react-native';
 import React from 'react';
 import RegisterForm from '../components/RegisterForm';
-import {useAuth} from '../../AuthContext';
+import {useAuth} from '../../ContextApi/AuthContext';
 import Pagestyles from '../../styles/Pagestyles';
 
 const Register = () => {

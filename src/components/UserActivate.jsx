@@ -2,12 +2,14 @@
 import {View} from 'react-native';
 import React from 'react';
 import UserActivateButton from './UserActivateButton';
+import {useNavigation} from '@react-navigation/native';
 
 function handleGirisCikis(gcurlparam) {
   console.log(gcurlparam, ' işlemi yapıldı');
 }
 
 const UserActivate = () => {
+  const navigation = useNavigation();
   return (
     <View>
       <View
@@ -19,7 +21,7 @@ const UserActivate = () => {
         <UserActivateButton
           iconName="food"
           title="Yemek Giriş"
-          onPress={() => handleGirisCikis('YG')}
+          onPress={() => navigation.navigate('QrScanner')}
           //style={{borderColor: 'red', borderWidth: 2}}
         />
         <UserActivateButton

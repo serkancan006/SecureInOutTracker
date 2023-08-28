@@ -92,7 +92,7 @@ const HomeRequestComponent = ({location, address}) => {
         <View style={{marginVertical: 5}}>
           <Button
             title={
-              loading ? 'İşleniyor...' : giris ? 'İşten Çıkış' : 'İşe Giriş'
+              loading ? 'İşleniyor...' : giris ? 'Mesai Bitir' : 'Mesai Başla'
             }
             onPress={toggleGiris}
             color={colors.primary}

@@ -8,6 +8,7 @@ import UserActivate from '../components/UserActivate';
 import {useAuth} from '../../ContextApi/AuthContext';
 import useLocationAddress from '../CustomHook/useLocationAddress'; // Özel kancayı içe aktarın
 import AdressComponent from '../components/AdressComponent';
+import UserInfoComponent from '../components/UserInfoComponent';
 
 const UserInfo = () => {
   const {user} = useAuth();
@@ -16,7 +17,7 @@ const UserInfo = () => {
 
   return (
     <ScrollView contentContainerStyle={Pagestyles.container}>
-      {/*    
+      {/*       
       <UserInfoComponent />
       */}
       {user.giris ? (

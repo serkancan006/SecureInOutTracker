@@ -7,10 +7,12 @@ import {useAuth} from '../../ContextApi/AuthContext';
 import mainstyles from '../../styles/Mainstyles';
 import colors from '../../styles/color';
 import UserActivateButton from './UserActivateButton';
+import LottieView from 'lottie-react-native';
 
 const UserActivate = ({location, address}) => {
   const [loading, setloading] = useState(false);
   const [response, setResponse] = useState('Giriş veya Çıkış Yapınız');
+  const [responseStatus, setresponseStatus] = useState();
   const {user, LogOutUser} = useAuth();
 
   function getFormattedDate() {
@@ -52,14 +54,17 @@ const UserActivate = ({location, address}) => {
           setResponse(response.data.result_message);
           setloading(false);
           LogOutUser();
+          setresponseStatus('hata');
         } else {
           setResponse(response.data.result_message);
           setloading(false);
+          setresponseStatus('200');
         }
       })
       .catch(err => {
         //console.log(err);
         setloading(false);
+        setresponseStatus('hata');
       });
   };
 
@@ -69,21 +74,38 @@ const UserActivate = ({location, address}) => {
         style={{
           alignItems: 'center',
           justifyContent: 'center',
-          height: 200,
+          minHeight: 200,
         }}>
         {loading ? (
           <Text>İşleniyor...</Text>
         ) : (
-          <Text
-            style={{
-              ...mainstyles.text,
-              fontSize: 22,
-              textAlign: 'center',
-              fontWeight: 'bold',
-              color: colors.text,
-            }}>
-            {response}
-          </Text>
+          <>
+            <Text
+              style={{
+                ...mainstyles.text,
+                fontSize: 22,
+                textAlign: 'center',
+                fontWeight: 'bold',
+                color: colors.text,
+              }}>
+              {response}
+            </Text>
+            {responseStatus === '200' ? (
+              <LottieView
+                source={require('../../assets/animations/succesfull.json')}
+                autoPlay
+                loop
+                style={{width: 50, height: 50, marginTop: 8}}
+              />
+            ) : responseStatus === 'hata' ? (
+              <LottieView
+                source={require('../../assets/animations/unsuccesfull.json')}
+                autoPlay
+                loop
+                style={{width: 50, height: 50, marginTop: 8}}
+              />
+            ) : null}
+          </>
         )}
       </View>
       {address && (

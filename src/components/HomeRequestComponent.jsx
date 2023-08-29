@@ -75,7 +75,7 @@ const HomeRequestComponent = ({location, address}) => {
         style={{
           alignItems: 'center',
           justifyContent: 'center',
-          height: 200,
+          minHeight: 200,
         }}>
         <Text
           style={{

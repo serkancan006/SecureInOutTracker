@@ -20,36 +20,18 @@ const useLocationAddress = () => {
       position => {
         setLocation(position.coords);
         //https://nominatim.openstreetmap.org/reverse?lat=39.887215&lon=32.82580166666666&format=json
-        const apiUrl = `${NOMINATIM_URL}/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
+        //const apiUrl = `${NOMINATIM_URL}/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
+        const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=AIzaSyC0ZF5k-Xz46x4WUBW8gAZTNwJ_o84FQ3s`;
         //adres api get isteği
         axios
           .get(apiUrl)
           .then(response => {
-            setAddress(response.data.display_name);
+            //setAddress(response.data.display_name);
+            setAddress(response.data.results[0].formatted_address);
           })
           .catch(error => {
             //console.error('nominatimdan Adres Bilgisi alınamadı. Api isteği başarısız oldu!',);
-            //setlocationError('internetinizi kontrol ediniz.');
-            axios
-              .get(
-                `${OPENCAGEDATE_URL}/json?q=${position.coords.latitude}+${position.coords.longitude}&key=${OPENCAGEDATE_API_KEY}`,
-              )
-              .then(response => {
-                //console.log(response.data.results[0].components);
-                const components = response.data.results[0].components;
-                const addressString = `${components.suburb} ${
-                  components.road
-                } ${components.road_type ? components.road_type : ''} ${
-                  components.town
-                } / ${components.province} ${components.country} ${
-                  components.continent
-                }`;
-                setAddress(addressString);
-              })
-              .catch(error => {
-                //console.error('opencagedata Adres Bilgisi alınamadı. Api isteği başarısız oldu!',);
-                setlocationError('internetinizi kontrol ediniz.');
-              });
+            setlocationError('internetinizi kontrol ediniz.');
           });
       },
       error => {
